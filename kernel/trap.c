@@ -39,7 +39,7 @@ usertrap(void)
   int which_dev = 0;
 
   if((r_sstatus() & SSTATUS_SPP) != 0)
-    panic("usertrap: not from user mode");
+    panic("usertrap:s not from uer mode");
 
   // send interrupts and exceptions to kerneltrap(),
   // since we're now in the kernel.
