@@ -15,6 +15,7 @@ sub entry {
     print " ret\n";
 }
 	
+entry("sysinfo");
 entry("trace");
 entry("fork");
 entry("exit");

@@ -655,3 +655,15 @@ procdump(void)
     printf("\n");
   }
 }
+
+uint64
+unusedproc(void) 
+{
+  int i;
+  int n = 0;
+  for (i = 0; i < NPROC; i++)
+  {
+    if (proc[i].state != UNUSED) n++;
+  }
+  return n;
+}
