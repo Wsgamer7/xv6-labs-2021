@@ -443,7 +443,7 @@ void vmprint_rec(pagetable_t pagetable, int level) {
 
     if (pte & PTE_V) {
       uint64 pa = PTE2PA(pte);
-      printf("%s: pte %d pa %d\n", prefix[level], i, pte, pa);
+      printf("%s%d: pte %p pa %p\n", prefix[level], i, pte, pa);
       vmprint_rec((pagetable_t) pa, level + 1);
     }
   }
@@ -452,3 +452,4 @@ void vmprint(pagetable_t pagetable) {
   printf("page table %p\n", pagetable);
   vmprint_rec(pagetable, 0);
 }
+
