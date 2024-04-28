@@ -120,6 +120,14 @@ found:
   p->pid = allocpid();
   p->state = USED;
 
+  // Allocate a usyscall page.
+  if ( (p->usyscall = (struct usyscall*) kalloc()) == 0) {
+    freeproc(p);
+    release(&p->lock);
+    return 0;
+  }
+  p->usyscall->pid = p->pid;
+
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -164,6 +172,10 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
+
+  if (p->usyscall) {
+    p->usyscall = 0;
+  }
 }
 
 // Create a user page table for a given process,
@@ -178,6 +190,11 @@ proc_pagetable(struct proc *p)
   if(pagetable == 0)
     return 0;
 
+  // map the usyscall struct
+  if (mappages(pagetable, USYSCALL, PGSIZE, (uint64)(p->usyscall), PTE_R) < 0) {
+    uvmfree(pagetable, 0);
+    return 0;
+  }
   // map the trampoline code (for system call return)
   // at the highest user virtual address.
   // only the supervisor uses it, on the way
@@ -195,6 +212,8 @@ proc_pagetable(struct proc *p)
     uvmfree(pagetable, 0);
     return 0;
   }
+
+  
 
   return pagetable;
 }
