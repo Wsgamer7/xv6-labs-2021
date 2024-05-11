@@ -1,0 +1,1 @@
+the first thread of 2 threads insert fail when they insert to the same burket in the same time. Because they get same address about the burket.
