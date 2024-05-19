@@ -74,24 +74,6 @@ mycpu(void) {
   struct cpu *c = &cpus[id];
   return c;
 }
-void 
-init_cpus_memlock(void) {
-  for (int id = 0; id < NCPU; id++) {
-    struct cpu *c = &cpus[id];
-    initlock(&c->kmem->lock, "kmem");
-  }
-}
-struct cpu*
-cpu_most_mems(void) {
-  struct cpu *c_most_mems = &cpus[0];
-  for (int id = 1; id < NCPU; id++) {
-    struct cpu *c = &cpus[id];
-    if (c->kmem->freenums > c_most_mems->kmem->freenums) {
-      c_most_mems = c;
-    }
-  }
-  return c_most_mems;
-}
 
 // Return the current struct proc *, or zero if none.
 struct proc*
