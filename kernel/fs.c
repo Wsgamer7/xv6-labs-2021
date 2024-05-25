@@ -291,8 +291,10 @@ ilock(struct inode *ip)
   struct buf *bp;
   struct dinode *dip;
 
-  if(ip == 0 || ip->ref < 1)
+  if(ip == 0 || ip->ref < 1) {
+    printf("%d/n", ip->ref);
     panic("ilock");
+  }
 
   acquiresleep(&ip->lock);
 
