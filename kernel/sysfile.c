@@ -315,36 +315,31 @@ sys_open(void)
       return -1;
     }
   }
-  if (ip->type == T_SYMLINK) {
-    if ((omode & O_NOFOLLOW) == 0) {
-        // recursively follow symlink
-        int count = 0;
-        char sympath[MAXPATH];
-        while (1) {
-            if (count >= 10) {
-                iunlockput(ip);
-                end_op();
-                printf("fail1\n");
-                return -1;
-            }
-            // read the path name from inode
-            if (readi(ip, 0, (uint64)sympath, ip->size-MAXPATH, MAXPATH) != MAXPATH) {
-                panic("open symlink");
-            }
-            printf("%s\n", sympath);
-            iunlockput(ip);
-            if ((ip = namei(sympath)) == 0) {
-                // could not find this file
-                end_op();
-                printf("fail2\n");
-                return -1;
-            }
-            ilock(ip);
-            if (ip->type != T_SYMLINK) {
-                break;
-            }
-            count++;
-        }
+  if ((omode & O_NOFOLLOW) == 0) {
+    struct inode* dp;
+    char npath[MAXPATH];
+    int i;
+    for (i = 0; i < 10 && ip->type == T_SYMLINK; i++) {
+      //从inode读取数据到npath中  
+      if (readi(ip, 0, (uint64)npath, 0, MAXPATH) == 0) {
+        iunlockput(ip);
+        end_op();
+        return -1;
+      }
+
+      iunlockput(ip);
+      if ((dp = namei(npath)) == 0) {
+        // iunlockput(ip);
+        end_op();
+        return -1;
+      }
+      ip = dp;
+      ilock(ip);
+    }
+    if (i == 10) {
+      iunlockput(ip);
+      end_op();
+      return -1;
     }
   }
   

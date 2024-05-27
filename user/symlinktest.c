@@ -56,51 +56,51 @@ static void
 testsymlink(void)
 {
   int r, fd1 = -1, fd2 = -1;
-  // char buf[4] = {'a', 'b', 'c', 'd'};
+  char buf[4] = {'a', 'b', 'c', 'd'};
   char c = 0, c2 = 0;
-  // struct stat st;
+  struct stat st;
     
   printf("Start: test symlinks\n");
 
   mkdir("/testsymlink");
 
-  // fd1 = open("/testsymlink/a", O_CREATE | O_RDWR);
-  // if(fd1 < 0) fail("failed to open a");
+  fd1 = open("/testsymlink/a", O_CREATE | O_RDWR);
+  if(fd1 < 0) fail("failed to open a");
 
-  // r = symlink("/testsymlink/a", "/testsymlink/b");
-  // if(r < 0)
-  //   fail("symlink b -> a failed");
+  r = symlink("/testsymlink/a", "/testsymlink/b");
+  if(r < 0)
+    fail("symlink b -> a failed");
 
-  // if(write(fd1, buf, sizeof(buf)) != 4)
-  //   fail("failed to write to a");
+  if(write(fd1, buf, sizeof(buf)) != 4)
+    fail("failed to write to a");
 
-  // if (stat_slink("/testsymlink/b", &st) != 0)
-  //   fail("failed to stat b");
-  // if(st.type != T_SYMLINK)
-  //   fail("b isn't a symlink");
+  if (stat_slink("/testsymlink/b", &st) != 0)
+    fail("failed to stat b");
+  if(st.type != T_SYMLINK)
+    fail("b isn't a symlink");
 
-  // fd2 = open("/testsymlink/b", O_RDWR);
-  // if(fd2 < 0)
-  //   fail("failed to open b");
-  // read(fd2, &c, 1);
-  // if (c != 'a')
-  //   fail("failed to read bytes from b");
+  fd2 = open("/testsymlink/b", O_RDWR);
+  if(fd2 < 0)
+    fail("failed to open b");
+  read(fd2, &c, 1);
+  if (c != 'a')
+    fail("failed to read bytes from b");
 
-  // unlink("/testsymlink/a");
-  // if(open("/testsymlink/b", O_RDWR) >= 0)
-  //   fail("Should not be able to open b after deleting a");
+  unlink("/testsymlink/a");
+  if(open("/testsymlink/b", O_RDWR) >= 0)
+    fail("Should not be able to open b after deleting a");
 
-  // r = symlink("/testsymlink/b", "/testsymlink/a");
-  // if(r < 0)
-  //   fail("symlink a -> b failed");
+  r = symlink("/testsymlink/b", "/testsymlink/a");
+  if(r < 0)
+    fail("symlink a -> b failed");
 
-  // r = open("/testsymlink/b", O_RDWR);
-  // if(r >= 0)
-  //   fail("Should not be able to open b (cycle b->a->b->..)\n");
+  r = open("/testsymlink/b", O_RDWR);
+  if(r >= 0)
+    fail("Should not be able to open b (cycle b->a->b->..)\n");
   
-  // r = symlink("/testsymlink/nonexistent", "/testsymlink/c");
-  // if(r != 0)
-  //   fail("Symlinking to nonexistent file should succeed\n");
+  r = symlink("/testsymlink/nonexistent", "/testsymlink/c");
+  if(r != 0)
+    fail("Symlinking to nonexistent file should succeed\n");
 
   printf("create sym 1->2->3->->4 \n");
   r = symlink("/testsymlink/2", "/testsymlink/1");
