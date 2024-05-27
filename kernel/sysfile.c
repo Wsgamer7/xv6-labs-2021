@@ -324,16 +324,19 @@ sys_open(void)
             if (count >= 10) {
                 iunlockput(ip);
                 end_op();
+                printf("fail1\n");
                 return -1;
             }
             // read the path name from inode
             if (readi(ip, 0, (uint64)sympath, ip->size-MAXPATH, MAXPATH) != MAXPATH) {
                 panic("open symlink");
             }
+            printf("%s\n", sympath);
             iunlockput(ip);
             if ((ip = namei(sympath)) == 0) {
                 // could not find this file
                 end_op();
+                printf("fail2\n");
                 return -1;
             }
             ilock(ip);
@@ -344,7 +347,7 @@ sys_open(void)
         }
     }
   }
-
+  
   if(ip->type == T_DEVICE && (ip->major < 0 || ip->major >= NDEV)){
     iunlockput(ip);
     end_op();
@@ -534,7 +537,7 @@ sys_symlink(void) {
     iunlock(ip);
   }
   ilock(ip);
-  if (writei(ip, 0, (uint64)target, 0, sizeof(target)) != sizeof(target))
+  if (writei(ip, 0, (uint64)target, ip->size, MAXPATH) != MAXPATH)
     panic("symlink");
   iunlockput(ip);
   end_op();
